@@ -1,0 +1,25 @@
+POST http://localhost:5000/api/equipment
+Content-Type: application/json
+
+{
+  "equipmentName": "Gas Turbine A",
+  "status": "Operational",
+  "technician": "Shithmi Rashanthi",
+  "notes": "Routine inspection completed during morning shift."
+}
+
+###
+
+PUT http://localhost:5000/api/equipment/REPLACE_ME_WITH_ID
+Content-Type: application/json
+
+{
+  "equipmentName": "Gas Turbine A",
+  "status": "Maintenance Required",
+  "technician": "Sachith Vishal",
+  "notes": "Vibration levels high. Bearing replacement scheduled."
+}
+
+###
+
+DELETE http://localhost:5000/api/equipment/REPLACE_ME_WITH_ID
