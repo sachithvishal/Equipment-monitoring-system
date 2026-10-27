@@ -10,7 +10,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5000/api/equipment/REPLACE_ME_WITH_ID
+PUT http://localhost:5000/api/equipment/6adddc41737c7c6bb9fb4576
 Content-Type: application/json
 
 {
@@ -22,4 +22,4 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5000/api/equipment/REPLACE_ME_WITH_ID
+DELETE http://localhost:5000/api/equipment/6adddc41737c7c6bb9fb4576

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Profile from './Profile';
 
 function App() {
   const [currentView, setCurrentView] = useState('login');
@@ -12,6 +13,9 @@ function App() {
   });
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('name'); 
 
   useEffect(() => {
     fetch('http://localhost:5000/api/equipment')
@@ -76,7 +80,6 @@ function App() {
       });
   };
 
-  // One-click database seed for the presentation
   const seedDatabase = async () => {
     const initialPool = [
       { equipmentName: 'AC Induction Motor 01', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: 'Rated: 11kV, 50Hz, 1500 RPM', notes: 'Main coolant pump motor.' },
@@ -106,7 +109,6 @@ function App() {
       });
     }
     
-    // Refresh the dashboard after populating
     const res = await fetch('http://localhost:5000/api/equipment');
     const data = await res.json();
     setEquipmentLogs(data);
@@ -117,11 +119,32 @@ function App() {
   const maintenance = equipmentLogs.filter(log => log.status === 'Needs Maintenance').length;
   const grounded = equipmentLogs.filter(log => log.status === 'Grounded').length;
 
+  // Student-style search and sort logic
+  let filteredEquipment = equipmentLogs.filter(log => {
+    return log.equipmentName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  filteredEquipment.sort((a, b) => {
+    if (sortBy === 'status') {
+      if (a.status < b.status) return -1;
+      if (a.status > b.status) return 1;
+      return 0;
+    } else if (sortBy === 'condition') {
+      if (a.condition < b.condition) return -1;
+      if (a.condition > b.condition) return 1;
+      return 0;
+    } else {
+      if (a.equipmentName < b.equipmentName) return -1;
+      if (a.equipmentName > b.equipmentName) return 1;
+      return 0;
+    }
+  });
+
   const getStatusColor = (status) => {
     if (status === 'Operational') return '#10b981'; 
     if (status === 'Needs Maintenance') return '#f59e0b'; 
     if (status === 'Grounded') return '#ef4444'; 
-    return '#6b7280'; // Offline
+    return '#6b7280';
   };
 
   const inputStyle = { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #374151', backgroundColor: '#1f2937', color: 'white', boxSizing: 'border-box' };
@@ -191,6 +214,27 @@ function App() {
     );
   }
 
+  if (currentView === 'profile') {
+    return (
+      <div className="animate-fade-in" style={{ backgroundColor: '#000000', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#ffffff' }}>
+        <style>{animationStyles}</style>
+        
+        <nav style={{ backgroundColor: '#111827', padding: '15px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1f2937' }}>
+          <h2 style={{ margin: 0, color: '#10b981' }}>TelemetryMate</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <span style={{ color: '#d1d5db', fontWeight: '500' }}>Hi, {loginForm.username || 'Vishal S S'}</span>
+            <button className="btn-hover" onClick={() => setCurrentView('dashboard')} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Dashboard</button>
+            <button className="btn-hover" onClick={handleLogout} style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Logout</button>
+          </div>
+        </nav>
+
+        <div style={{ maxWidth: '800px', margin: '40px auto', padding: '0 20px' }}>
+          <Profile />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in" style={{ backgroundColor: '#000000', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#ffffff', paddingBottom: '50px' }}>
       <style>{animationStyles}</style>
@@ -199,6 +243,7 @@ function App() {
         <h2 style={{ margin: 0, color: '#10b981' }}>TelemetryMate</h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <span style={{ color: '#d1d5db', fontWeight: '500' }}>Hi, {loginForm.username || 'Vishal S S'}</span>
+          <button className="btn-hover" onClick={() => setCurrentView('profile')} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Profile</button>
           <button className="btn-hover" onClick={handleLogout} style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Logout</button>
         </div>
       </nav>
@@ -236,40 +281,56 @@ function App() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '30px', alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
           
           <div className="animate-slide-up" style={{ backgroundColor: '#111827', padding: '25px', borderRadius: '12px', border: '1px solid #1f2937', animationDelay: '0.6s', opacity: 0 }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', color: '#ffffff' }}>Add / Import New Unit</h3>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
               <input type="text" name="equipmentName" placeholder="Unit Name (e.g. Pump 06)" value={formData.equipmentName} onChange={handleChange} required style={inputStyle}/>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <select name="status" value={formData.status} onChange={handleChange} style={inputStyle}>
-                  <option value="Operational">Operational</option>
-                  <option value="Needs Maintenance">Maintenance</option>
-                  <option value="Grounded">Grounded</option>
-                  <option value="Offline">Offline</option>
-                </select>
-                <select name="condition" value={formData.condition} onChange={handleChange} style={inputStyle}>
-                  <option value="New">New</option>
-                  <option value="Good">Good</option>
-                  <option value="Fair">Fair</option>
-                  <option value="Poor">Poor</option>
-                  <option value="Critical">Critical</option>
-                </select>
-              </div>
-
+              <select name="status" value={formData.status} onChange={handleChange} style={inputStyle}>
+                <option value="Operational">Operational</option>
+                <option value="Needs Maintenance">Maintenance</option>
+                <option value="Grounded">Grounded</option>
+                <option value="Offline">Offline</option>
+              </select>
+              <select name="condition" value={formData.condition} onChange={handleChange} style={inputStyle}>
+                <option value="New">New</option>
+                <option value="Good">Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Poor">Poor</option>
+                <option value="Critical">Critical</option>
+              </select>
               <input type="text" name="technician" placeholder="Assign Technician" value={formData.technician} onChange={handleChange} required style={inputStyle}/>
               <input type="text" name="details" placeholder="Rated Voltage / Details" value={formData.details} onChange={handleChange} style={inputStyle}/>
               <input type="text" name="notes" placeholder="Current Session Notes" value={formData.notes} onChange={handleChange} style={inputStyle}/>
-              <button className="btn-hover" type="submit" style={{ width: '100%', padding: '12px', backgroundColor: '#10b981', color: '#000000', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}>Register Unit</button>
+              <button className="btn-hover" type="submit" style={{ gridColumn: '1 / -1', padding: '12px', backgroundColor: '#10b981', color: '#000000', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Register New Unit</button>
             </form>
           </div>
 
           <div className="animate-slide-up" style={{ backgroundColor: '#111827', padding: '25px', borderRadius: '12px', border: '1px solid #1f2937', animationDelay: '0.7s', opacity: 0 }}>
-             <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', color: '#ffffff' }}>Plant Equipment Pool</h3>
-             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' }}>
-              {equipmentLogs.map((log, index) => (
+             <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#ffffff' }}>Plant Equipment Pool</h3>
+             
+             <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+               <input 
+                 type="text" 
+                 placeholder="Search equipment by name..." 
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
+                 style={{ ...inputStyle, flex: 1, marginBottom: '0' }}
+               />
+               <select 
+                 value={sortBy} 
+                 onChange={(e) => setSortBy(e.target.value)} 
+                 style={{ padding: '12px', borderRadius: '8px', border: '1px solid #374151', backgroundColor: '#1f2937', color: 'white', cursor: 'pointer' }}
+               >
+                 <option value="name">Sort by Name</option>
+                 <option value="status">Sort by Status</option>
+                 <option value="condition">Sort by Condition</option>
+               </select>
+             </div>
+
+             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '15px' }}>
+              {filteredEquipment.map((log, index) => (
                 <div key={log._id} className="animate-slide-up card-hover" style={{ border: '1px solid #374151', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#000000', animationDelay: `${0.8 + (index * 0.1)}s`, opacity: 0 }}>
                   <div style={{ height: '5px', backgroundColor: getStatusColor(log.status) }}></div>
                   <div style={{ padding: '20px' }}>
