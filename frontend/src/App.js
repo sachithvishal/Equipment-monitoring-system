@@ -358,15 +358,15 @@ function App() {
                   <div style={{ padding: '20px' }}>
                     {targetEditId === sysItem._id ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <input type="text" name="equipmentName" value={updateFields.equipmentName} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
+                        <input type="text" name="equipmentName" value={updateFields.equipmentName || ''} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                          <select name="status" value={updateFields.status} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}>
+                          <select name="status" value={updateFields.status || 'Operational'} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}>
                             <option value="Operational">Operational</option>
                             <option value="Needs Maintenance">Maintenance</option>
                             <option value="Grounded">Grounded</option>
                             <option value="Offline">Offline</option>
                           </select>
-                          <select name="condition" value={updateFields.condition} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}>
+                          <select name="condition" value={updateFields.condition || 'New'} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}>
                             <option value="New">New</option>
                             <option value="Good">Good</option>
                             <option value="Fair">Fair</option>
@@ -374,9 +374,9 @@ function App() {
                             <option value="Critical">Critical</option>
                           </select>
                         </div>
-                        <input type="text" name="technician" value={updateFields.technician} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
-                        <input type="text" name="details" value={updateFields.details} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
-                        <input type="text" name="notes" value={updateFields.notes} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
+                        <input type="text" name="technician" value={updateFields.technician || ''} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
+                        <input type="text" name="details" value={updateFields.details || ''} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
+                        <input type="text" name="notes" value={updateFields.notes || ''} onChange={handleModifyChange} style={{ padding: '8px', ...baseInputDesign }}/>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <button className="btn-hover" onClick={() => saveModifications(sysItem._id)} style={{ flex: 1, padding: '8px', backgroundColor: '#10b981', color: '#000000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Save</button>
                           <button className="btn-hover" onClick={() => setTargetEditId(null)} style={{ flex: 1, padding: '8px', backgroundColor: '#4b5563', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
