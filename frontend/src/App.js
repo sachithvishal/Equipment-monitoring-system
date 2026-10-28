@@ -106,38 +106,7 @@ function App() {
       });
   };
 
-  const populateDatabase = async () => {
-    console.log("Seeding started!");
-    const initialPool = [
-      { equipmentName: 'AC Induction Motor 01', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: 'Rated: 11kV, 50Hz, 1500 RPM', notes: 'Main coolant pump motor.' },
-      { equipmentName: 'Synchronous Motor 02', status: 'Operational', condition: 'New', technician: 'Unassigned', details: 'Rated: 3.3kV, 0.9 PF', notes: 'Air compressor drive.' },
-      { equipmentName: 'Boiler Feed Pump Motor 03', status: 'Needs Maintenance', condition: 'Fair', technician: 'Vishal S S', details: 'Rated: 6.6kV, 2000kW', notes: 'Vibration detected on DE bearing.' },
-      { equipmentName: 'CW Pump Motor 04', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: 'Rated: 415V, 3-Phase', notes: 'Cooling water circulation.' },
-      { equipmentName: 'ID Fan Motor 05', status: 'Grounded', condition: 'Critical', technician: 'Unassigned', details: 'Rated: 6.6kV, 1200kW', notes: 'Stator winding insulation failure.' },
-      { equipmentName: 'HP Steam Turbine 01', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: 'High Pressure, 3000 RPM, 540°C', notes: 'Running at base load.' },
-      { equipmentName: 'IP Steam Turbine 02', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: 'Intermediate Pressure, 3000 RPM', notes: 'Normal operation.' },
-      { equipmentName: 'LP Steam Turbine 03', status: 'Needs Maintenance', condition: 'Fair', technician: 'Vishal S S', details: 'Low Pressure, Double Exhaust', notes: 'Condenser vacuum slightly low.' },
-      { equipmentName: 'Gas Turbine 04', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: '150 MW, Peak Load Unit', notes: 'Standby mode ready.' },
-      { equipmentName: 'Hydro Turbine 05', status: 'Grounded', condition: 'Poor', technician: 'Unassigned', details: 'Kaplan Type, 50 MW', notes: 'Runner blades undergoing cavitation repair.' },
-      { equipmentName: 'Main LV Switchboard 01', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: '415V, 4000A Busbar', notes: 'All incomers active.' },
-      { equipmentName: 'HV Switchgear 02', status: 'Operational', condition: 'New', technician: 'Unassigned', details: '11kV, SF6 Gas Insulated', notes: 'Recently commissioned.' },
-      { equipmentName: 'Station Transformer 03', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: '11kV/415V, 2.5 MVA', notes: 'Oil level normal, temp normal.' },
-      { equipmentName: 'Excitation Panel 04', status: 'Needs Maintenance', condition: 'Fair', technician: 'Vishal S S', details: '400V DC Output', notes: 'Thyristor cooling fan erratic.' },
-      { equipmentName: 'Battery Bank 05', status: 'Operational', condition: 'Good', technician: 'Unassigned', details: '220V DC, 1000 Ah Lead-Acid', notes: 'Float charging normal.' }
-    ];
 
-    for (let i = 0; i < initialPool.length; i++) {
-      await fetch('http://localhost:5000/api/equipment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(initialPool[i])
-      });
-    }
-    
-    let finalReq = await fetch('http://localhost:5000/api/equipment');
-    let fetchedArray = await finalReq.json();
-    setMachineList(fetchedArray);
-  };
 
   const getBadgeColor = (statusLabel) => {
     switch(statusLabel) {
@@ -276,12 +245,7 @@ function App() {
           <div>
             <h1 style={{ margin: 0, color: '#ffffff' }}>Welcome back, {userCreds.username || 'Vishal S S'}</h1>
             <p style={{ margin: '5px 0 0 0', color: '#9ca3af' }}>Track equipment condition, manage plant modules, and assign technicians.</p>
-          </div>
-          {machineList.length === 0 && (
-            <button className="btn-hover" onClick={populateDatabase} style={{ padding: '12px 24px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              + Inject Initial 15 Power Plant Units
-            </button>
-          )}
+          </div>   
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
